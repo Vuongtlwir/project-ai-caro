@@ -312,5 +312,5 @@ class CaroGameUI:
                     self.draw_game_over()
 
             pygame.display.update()
-#hhu
+
         pygame.quit()
