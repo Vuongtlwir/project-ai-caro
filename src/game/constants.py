@@ -11,10 +11,19 @@ INF = 10**18
 
 MAX_DEPTH = 4
 
-# Directions
+
+CELL_SIZE = 40
+
+WIDTH = BOARD_SIZE * CELL_SIZE
+HEIGHT = BOARD_SIZE * CELL_SIZE + 60
+
+FPS = 60
+
+# directions: horizontal, vertical, diagonals
 DIRECTIONS = [
-    (0, 1),    # ngang
-    (1, 0),    # dọc
-    (1, 1),    # chéo xuống
-    (-1, 1)    # chéo lên
+    (0, 1),     # horizontal
+    (1, 0),     # vertical
+    (1, 1),     # diagonal down-right
+    (1, -1)     # diagonal down-left
+
 ]
