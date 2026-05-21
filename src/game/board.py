@@ -18,22 +18,13 @@ class Board:
     # VALID MOVE
     # =====================================
 
-    def is_valid_move(self, row, col):
-
-        # ngoài bàn cờ
-        if (
-            row < 0
-            or row >= BOARD_SIZE
-            or col < 0
-            or col >= BOARD_SIZE
-        ):
-            return False
-
-        # ô đã có quân
-        if self.grid[row][col] != EMPTY:
-            return False
-
-        return True
+    # Trong bàn cờ
+    def in_chess_bound(self, row, col):
+        return 0 <= row < BOARD_SIZE and 0 <= col < BOARD_SIZE
+    # Ô trống
+    def is_empty(self, row, col):
+        return self.grid[row][col] == EMPTY
+        
 
     # =====================================
     # MAKE MOVE
@@ -41,7 +32,7 @@ class Board:
 
     def make_move(self, row, col):
 
-        if not self.is_valid_move(row, col):
+        if not self.in_chess_bound(row, col ) or not self.is_empty(row, col):
             return False
 
         self.grid[row][col] = self.current_player
@@ -104,15 +95,8 @@ class Board:
                             nr = row + dr
                             nc = col + dc
 
-                            # trong bàn cờ
-                            if (
-                                0 <= nr < BOARD_SIZE
-                                and 0 <= nc < BOARD_SIZE
-                            ):
-
-                                # ô trống
-                                if self.grid[nr][nc] == EMPTY:
-
+                            
+                            if ( self.in_chess_bound(nr, nc) and self.is_empty(nr, nc)):
                                     moves.add((nr, nc))
 
         return list(moves)
