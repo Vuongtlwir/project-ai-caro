@@ -11,6 +11,7 @@ INF = 10**18
 
 MAX_DEPTH = 4
 
+
 CELL_SIZE = 40
 
 WIDTH = BOARD_SIZE * CELL_SIZE
@@ -24,4 +25,5 @@ DIRECTIONS = [
     (1, 0),     # vertical
     (1, 1),     # diagonal down-right
     (1, -1)     # diagonal down-left
+
 ]

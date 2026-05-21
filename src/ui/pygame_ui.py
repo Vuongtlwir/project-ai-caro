@@ -313,7 +313,6 @@ class CaroGameUI:
             pygame.SRCALPHA
         )
 
-        # GLOW TO HƠN
         pygame.draw.line(
             glow_surface,
             (255, 215, 0, 55),
@@ -324,7 +323,6 @@ class CaroGameUI:
 
         self.screen.blit(glow_surface, (0, 0))
 
-        # LINE TRẮNG
         pygame.draw.line(
             self.screen,
             (255, 255, 255),
@@ -333,7 +331,6 @@ class CaroGameUI:
             8
         )
 
-        # LINE VÀNG
         pygame.draw.line(
             self.screen,
             (255, 215, 0),
@@ -417,7 +414,10 @@ class CaroGameUI:
         c = (mx - self.offset_x) // CELL_SIZE
         r = (my - self.offset_y) // CELL_SIZE
 
-        if not self.board.is_valid_move(r, c):
+        if not (
+            self.board.in_chess_bound(r, c)
+            and self.board.is_empty(r, c)
+        ):
             return
 
         x = self.offset_x + c * CELL_SIZE
@@ -522,8 +522,6 @@ class CaroGameUI:
             1
         )
 
-        # ================= GAME OVER =================
-
         if self.game_over:
 
             if self.ai_enabled:
@@ -561,8 +559,6 @@ class CaroGameUI:
                     self.offset_y + 170
                 )
             )
-
-        # ================= TURN =================
 
         else:
 
@@ -769,7 +765,10 @@ class CaroGameUI:
         c = (x - self.offset_x) // CELL_SIZE
         r = (y - self.offset_y) // CELL_SIZE
 
-        if not self.board.is_valid_move(r, c):
+        if not (
+            self.board.in_chess_bound(r, c)
+            and self.board.is_empty(r, c)
+        ):
             return
 
         self.board.make_move(r, c)

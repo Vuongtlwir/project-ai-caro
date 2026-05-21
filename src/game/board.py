@@ -14,26 +14,37 @@ class Board:
 
         self.move_history = []
 
+        self.last_move = None
+
+    # =====================================
+    # TRONG BÀN CỜ
+    # =====================================
+
+    def in_chess_bound(self, row, col):
+
+        return (
+            0 <= row < BOARD_SIZE
+            and 0 <= col < BOARD_SIZE
+        )
+
+    # =====================================
+    # Ô TRỐNG
+    # =====================================
+
+    def is_empty(self, row, col):
+
+        return self.grid[row][col] == EMPTY
+
     # =====================================
     # VALID MOVE
     # =====================================
 
     def is_valid_move(self, row, col):
 
-        # ngoài bàn cờ
-        if (
-            row < 0
-            or row >= BOARD_SIZE
-            or col < 0
-            or col >= BOARD_SIZE
-        ):
-            return False
-
-        # ô đã có quân
-        if self.grid[row][col] != EMPTY:
-            return False
-
-        return True
+        return (
+            self.in_chess_bound(row, col)
+            and self.is_empty(row, col)
+        )
 
     # =====================================
     # MAKE MOVE
@@ -48,7 +59,21 @@ class Board:
 
         self.move_history.append((row, col))
 
+        self.last_move = (row, col)
+
         return True
+
+    # =====================================
+    # SIMULATE MOVE (CHO MINIMAX)
+    # =====================================
+
+    def simulate_move(self, row, col, player):
+
+        self.grid[row][col] = player
+
+        self.move_history.append((row, col))
+
+        self.last_move = (row, col)
 
     # =====================================
     # UNDO MOVE
@@ -62,6 +87,11 @@ class Board:
         row, col = self.move_history.pop()
 
         self.grid[row][col] = EMPTY
+
+        if self.move_history:
+            self.last_move = self.move_history[-1]
+        else:
+            self.last_move = None
 
     # =====================================
     # SWITCH PLAYER
@@ -90,10 +120,8 @@ class Board:
 
             for col in range(BOARD_SIZE):
 
-                # có quân cờ
                 if self.grid[row][col] != EMPTY:
 
-                    # xét 8 hướng xung quanh
                     for dr in [-1, 0, 1]:
 
                         for dc in [-1, 0, 1]:
@@ -104,18 +132,31 @@ class Board:
                             nr = row + dr
                             nc = col + dc
 
-                            # trong bàn cờ
-                            if (
-                                0 <= nr < BOARD_SIZE
-                                and 0 <= nc < BOARD_SIZE
-                            ):
+                            if self.is_valid_move(nr, nc):
 
-                                # ô trống
-                                if self.grid[nr][nc] == EMPTY:
-
-                                    moves.add((nr, nc))
+                                moves.add((nr, nc))
 
         return list(moves)
+
+    # =====================================
+    # COPY BOARD (OPTIONAL)
+    # =====================================
+
+    def copy(self):
+
+        new_board = Board()
+
+        for r in range(BOARD_SIZE):
+            for c in range(BOARD_SIZE):
+                new_board.grid[r][c] = self.grid[r][c]
+
+        new_board.current_player = self.current_player
+
+        new_board.move_history = self.move_history.copy()
+
+        new_board.last_move = self.last_move
+
+        return new_board
 
     # =====================================
     # RESET
@@ -131,3 +172,5 @@ class Board:
         self.current_player = HUMAN
 
         self.move_history.clear()
+
+        self.last_move = None
