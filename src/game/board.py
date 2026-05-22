@@ -69,12 +69,16 @@ class Board:
 
     def simulate_move(self, row, col, player):
 
+        if not self.is_valid_move(row, col):
+            return False
+
         self.grid[row][col] = player
 
         self.move_history.append((row, col))
 
         self.last_move = (row, col)
 
+        return True
     # =====================================
     # UNDO MOVE
     # =====================================
@@ -157,6 +161,16 @@ class Board:
         new_board.last_move = self.last_move
 
         return new_board
+
+
+    # Tạo nước đi giả lập, và hoàn tác
+    def make_move_simulate(self, row, col, player):
+        self.grid[row][col] = player
+
+
+    def undo_move_simulate(self, row, col):
+        self.grid[row][col] = EMPTY
+
 
     # =====================================
     # RESET
