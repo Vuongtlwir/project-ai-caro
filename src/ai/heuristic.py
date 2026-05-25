@@ -20,9 +20,9 @@ PATTERN_SCORES = {
     (4, 1): 50_000,
     
     # Open 3 (2 ĐẦU ĐỀU MỞ)
-    (3, 2): 10_000,
+    (3, 2): 18_000,
     # Blocked 3 ( CHẶN 1 ĐẦU )
-    (3, 1): 1_000,
+    (3, 1): 1_500,
     
     # Open 2
     (2, 2): 100,
@@ -35,21 +35,21 @@ PATTERN_SCORES = {
 }
 
 # Double threat bonus: ĐIỂM THƯỞNG CHO NHIỀU OPEN 3 OPEN 4
-DOUBLE_THREAT_BONUS = 200_000
+DOUBLE_THREAT_BONUS = 100_000
 
 
 # NGĂN CHẶN CÁC ĐIỂM QUAN TRỌNG (e.g., XX_XX, X_XXX) - KHOẢNG TRỐNG TRONG CHUỖI
-BROKEN_FOUR_SCORE = 40_000  # X_XXX or XX_XX pattern
+BROKEN_FOUR_SCORE = 100_000  # X_XXX or XX_XX pattern
 BROKEN_THREE_SCORE = 5_000   # X_XX or XX_X pattern
 
 # MỨC ĐỘ ƯU TIÊN CHO CÁC MỐI ĐE DỌA TỪ ĐỐI THỦ
-OPPONENT_WEIGHT = 1.15
+OPPONENT_WEIGHT =  1.15
 
 # THƯỞNG THÊM NẾU KIỂM SOÁT ĐIỂM TRUNG TÂM
 CENTER_BONUS = 15
 
 # BÁN KÍNH TÌM KIẾM LÂN CẬN CHO CÁC NƯỚC ĐI TIỀM NĂNG
-NEIGHBOR_RADIUS = 2
+NEIGHBOR_RADIUS = 3
 
 
 
@@ -57,6 +57,13 @@ class HeuristicsMixin:
     #Đánh giá nhanh chiến thuật của một nước đi mà không cần xem xét toàn bộ bàn cờ.
     #Kiểm tra các mối đe dọa tức thời được tạo ra và bị chặn.
     def quick_tactical_score(self, board: Board, row, col):
+        board.make_move_simulate(row, col, HUMAN)
+
+        if board.get_winner() == HUMAN:
+            board.undo_move_simulate(row, col)
+            return WIN_SCORE
+
+        board.undo_move_simulate(row, col)
         score = 0
 
         board.make_move_simulate(row, col, AI)
@@ -103,22 +110,22 @@ class HeuristicsMixin:
         if 0 <= r < size and 0 <= c < size and board.grid[r][c] == EMPTY:
             open_ends +=1
         # Kiểm tra hướng ngược lại
-        r = row -dr
-        c = col - dc
-        while 0<= r < size and  0 <= c < size and board.grid[r][c] == player :
+        prev_r = row -dr
+        prev_c = col - dc
+        while 0<= prev_r < size and  0 <= prev_c < size and board.grid[prev_r][prev_c] == player :
             length +=1
-            r -= dr
-            c -=dc
-        if 0 <= r < size and 0 <= c < size and board.grid[r][c] == EMPTY:
+            prev_r -= dr
+            prev_c -=dc
+        if 0 <= prev_r < size and 0 <= prev_c < size and board.grid[prev_r][prev_c] == EMPTY:
             open_ends +=1
 
         return length, open_ends
         
     # Đánh giá trạng thái bàn cờ tổng thể
-    def evuluate(self, board: Board):
-        ai_score = self.evuluate_player(board, AI)
-        human_score = self.evuluate_player(board, HUMAN)
+    def evaluate(self, board: Board):
 
+        ai_score = self.evaluate_player(board, AI)
+        human_score = self.evaluate_player(board, HUMAN)
         # Kiểm tra đe dọa kép (2 open 3 , 2 open 4 tạo đe dọa)
         ai_score += self.count_double_threats(board, AI)
         human_score += self.count_double_threats(board, HUMAN)
@@ -126,13 +133,13 @@ class HeuristicsMixin:
         return int(ai_score - OPPONENT_WEIGHT * human_score)
 
     # Đấnh giá trạng thái bàn cờ của 1 người cụ thể
-    def evuluate_player( self, board: Board, player):
+    def evaluate_player( self, board: Board, player):
         total =0
         size = BOARD_SIZE
-        evuluate_sequences: Set[Tuple[int, int, int, int, int]] = set()
+        evaluate_sequences: Set[Tuple[int, int, int, int, int]] = set()
 
-        for row in range(size):
-            for col in range(size):
+        for row in range(-5, 6):
+            for col in range(5, 6):
                 if board.grid[row][col] != player:
                     continue
                 
@@ -140,9 +147,9 @@ class HeuristicsMixin:
                     if self.is_previous_same(board, row, col, dr, dc, player):
                         continue
                     sequence_key = (row, col, dr, dc)
-                    if sequence_key in evuluate_sequences:
+                    if sequence_key in evaluate_sequences:
                         continue
-                    evuluate_sequences.add(sequence_key)
+                    evaluate_sequences.add(sequence_key)
 
                     length, open_ends = self.count_sequence(board, row, col, dr, dc, player)
                     total += self.score_pattern(length, open_ends)
@@ -155,49 +162,48 @@ class HeuristicsMixin:
 
     # Kiểm tra các mẫu nguy hiểm (các mẫu bị phá vỡ như X_XXX, ...) tạo thành chuỗi 4 với 1 nước đi
     def check_broken_pattern(
-            self,
-            board: Board,
-            row,
-            col,
-            dr,
-            dc,
-            player
+        self,
+        board: Board,
+        row,
+        col,
+        dr,
+        dc,
+        player
     ):
+
         size = BOARD_SIZE
-        first_count = 0
-        r = row
-        c = col
-        while 0 <= r< size and 0 <=c < size and board.grid[r][c] == player:
-            first_count  +=1
-            r += dr
-            c += dc
-        if not (0 <= r< size and 0 <=c < size and board.grid[r][c] == EMPTY):
-            return  0
-        r += dr
-        c += dc
-        second_count = 0
-        while (0 <= r< size and 0 <=c < size and board.grid[r][c] == player):
-            second_count +=1
-            r += dr
-            c += dc
-        if second_count == 0:
-            return 0
-        total_pieces = first_count + second_count
 
-        open_ends =0
-        if 0 <= r< size and 0 <=c < size and board.grid[r][c] == EMPTY:
-            open_ends +=1
+        line = []
 
-        prev_r = row - dr
-        prev_c = col -dc
-        if 0 <= r< size and 0 <=c < size and board.grid[r][c] == EMPTY:
-            open_ends +=1
-        
-        if( total_pieces >=4 and open_ends >=1):
-            return BROKEN_FOUR_SCORE
-        elif total_pieces ==3 and opens_end >=1:
-            return BROKEN_THREE_SCORE
-        return 0
+        for i in range(-4, 5):
+
+            r = row + i * dr
+            c = col + i * dc
+
+            if 0 <= r < size and 0 <= c < size:
+                if board.grid[r][c] == player:
+                    line.append("X")
+                elif board.grid[r][c] == EMPTY:
+                    line.append("_")
+                else:
+                    line.append("O")
+            else:
+                line.append("O")
+
+        s = "".join(line)
+
+        score = 0
+
+        if "XXXX_" in s or "_XXXX" in s:
+            score += BROKEN_FOUR_SCORE
+
+        if "XXX_X" in s or "X_XXX" in s or "XX_XX" in s:
+            score += BROKEN_FOUR_SCORE
+
+        if "XX_X_" in s or "_X_XX" in s:
+            score += BROKEN_THREE_SCORE
+
+        return score
     # Đếm số vị trí player có nhiều open 3 , open 4 có sự đe dọa kép mạnh
     def count_double_threats(self, board: Board, player):
         threats: List[Tuple[int, int]] = []
@@ -245,8 +251,8 @@ class HeuristicsMixin:
 
         # Kiểm tra đầu đằng sau ( ?xxx)
         prev_r = row - dr
-        pre_c = row -dc
-        if 0 <= r < size and 0 <= c < size and board.grid[r][c] == EMPTY:
+        prev_c = col -dc
+        if 0 <= prev_r < size and 0 <= prev_c < size and board.grid[prev_r][prev_c] == EMPTY:
             open_ends +=1 
         return length, open_ends
 

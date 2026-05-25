@@ -1,5 +1,5 @@
 from src.game.constants import *
-
+from .win_checker import check_win
 
 class Board:
 
@@ -165,13 +165,47 @@ class Board:
 
     # Tạo nước đi giả lập, và hoàn tác
     def make_move_simulate(self, row, col, player):
+
+        if not self.is_valid_move(row, col):
+            return False
+
         self.grid[row][col] = player
 
+        self.move_history.append((row, col))
+
+        self.last_move = (row, col)
+
+        return True
 
     def undo_move_simulate(self, row, col):
+
         self.grid[row][col] = EMPTY
 
+        self.move_history.pop()
 
+        if self.move_history:
+            self.last_move = self.move_history[-1]
+        else:
+            self.last_move = None
+
+
+    # Trả ra 1 người cụ thể thắng 
+    def get_winner(self):
+
+        if self.last_move is None:
+            return None
+
+        row, col = self.last_move
+
+        player = self.grid[row][col]
+
+        if player == EMPTY:
+            return None
+
+        if check_win(self.grid, row, col):
+            return player
+
+        return None
     # =====================================
     # RESET
     # =====================================

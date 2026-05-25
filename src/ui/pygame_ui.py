@@ -1,7 +1,7 @@
 import pygame
-import random
 import math
 
+from src.ai.minimax import Minimax
 from src.game.board import Board
 from src.game.constants import *
 from src.game.rules import get_game_result
@@ -41,6 +41,7 @@ class CaroGameUI:
         self.board = Board()
 
         self.board_pixel_size = BOARD_SIZE * CELL_SIZE + 1
+        self.ai = Minimax(max_depth=4, time_limit_sec=2.0)
 
         self.offset_x = 40
         self.offset_y = 40
@@ -673,12 +674,15 @@ class CaroGameUI:
 
     def ai_move(self):
 
-        moves = self.board.available_neighbors()
+        move, score = self.ai.search_root(
+            self.board,
+            depth=4
+        )
 
-        if not moves:
+        if move is None:
             return
 
-        r, c = random.choice(moves)
+        r, c = move
 
         self.board.make_move(r, c)
 
@@ -701,7 +705,6 @@ class CaroGameUI:
         else:
 
             self.board.switch_player()
-
     # ================= AI UPDATE =================
 
     def update_ai(self):
