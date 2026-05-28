@@ -674,10 +674,7 @@ class CaroGameUI:
 
     def ai_move(self):
 
-        move, score = self.ai.search_root(
-            self.board,
-            depth=4
-        )
+        move = self.ai.choose_move(self.board)
 
         if move is None:
             return

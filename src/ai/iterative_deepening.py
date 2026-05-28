@@ -13,7 +13,7 @@ class IterativeDeepening:
         self.start_time = time.perf_counter()
         self.time_up = False
         self.killer_moves.clear()
-        self.move_scores.cleart()
+        self.move_scores.clear()
         self.nodes_evaluated = 0
 
         legal_moves = self.get_candidate_moves(board)

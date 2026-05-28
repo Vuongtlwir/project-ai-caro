@@ -138,8 +138,8 @@ class HeuristicsMixin:
         size = BOARD_SIZE
         evaluate_sequences: Set[Tuple[int, int, int, int, int]] = set()
 
-        for row in range(-5, 6):
-            for col in range(5, 6):
+        for row in range(size):
+            for col in range(size):
                 if board.grid[row][col] != player:
                     continue
                 
