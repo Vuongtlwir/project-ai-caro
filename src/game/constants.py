@@ -10,6 +10,7 @@ DRAW = 2
 INF = 10**18
 
 MAX_DEPTH = 4
+TIME_LIMIT = 2.0    # giây — giới hạn thời gian tìm kiếm mỗi lượt AI
 
 
 CELL_SIZE = 40

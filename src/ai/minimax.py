@@ -57,7 +57,7 @@ class Minimax(
         )
         if not moves:
             return None, 0
-     
+
         # AI THẮNG NGAY
         for move in moves:
 
