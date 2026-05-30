@@ -6,6 +6,8 @@ from .types import Move
 from src.game.constants import *
 from .heuristic import CENTER_BONUS, NEIGHBOR_RADIUS
 
+NEAREST_STONE_BONUS = 12
+
 class MoveOrdering:
 
     #Sắp xếp các nước đi tiềm năng dựa trên một số tiêu chí(các ô trống trong bán kính lân cận) để cải thiện hiệu quả của cắt Alpha-Beta.
@@ -15,12 +17,13 @@ class MoveOrdering:
             center = BOARD_SIZE //2
             return [(center, center)]
         
+        search_radius = 2 if len(board.move_history) == 1 else NEIGHBOR_RADIUS
         candidate: Set[Move] = set()
 
         for row, col in board.move_history:
 
-            for dr in range(-NEIGHBOR_RADIUS, NEIGHBOR_RADIUS +1):
-                for dc in range(-NEIGHBOR_RADIUS, NEIGHBOR_RADIUS +1):
+            for dr in range(-search_radius, search_radius +1):
+                for dc in range(-search_radius, search_radius +1):
                     if dr == 0 and dc ==0:
                         continue
                     nr = row +dr
@@ -52,9 +55,44 @@ class MoveOrdering:
             tactical = self.quick_tactical_score(board, row, col)
             score += tactical
 
+            # TĂNG ĐIỂM CHO NƯỚC ĐI TẠO THREAT MẠNH
+            board.make_move_simulate(row, col, AI)
+            if self.is_dangerous_threat(board, AI):
+                score += 300_000  # tạo threat
+            board.undo_move_simulate(row, col)
+
+            # CHỐNG THREAT CỦA player
+            if self.is_dangerous_threat(board, HUMAN):
+
+                board.make_move_simulate(row, col, AI)
+
+                if not self.is_dangerous_threat(board, HUMAN):
+                    score += 500000
+
+                board.undo_move_simulate(row, col)
+
+            
+            
             distance = abs(row - center) + abs(col -center)
             score += CENTER_BONUS * (BOARD_SIZE *2 - distance)
 
+            nearest_distance = min(
+                abs(row - r) + abs(col - c)
+                for r, c in board.move_history
+            )
+
+            if len(board.move_history) == 1 and board.grid[board.move_history[0][0]][board.move_history[0][1]] == HUMAN:
+                score += 1600 - nearest_distance * 240
+            else:
+                score += NEAREST_STONE_BONUS * (
+                    BOARD_SIZE * 2 - nearest_distance
+                )
+
             return score
         moves.sort( key = score_move, reverse = True)
+
+        max_moves = 40 if depth >= 3 else 24
+        if len(moves) > max_moves:
+            moves = moves[:max_moves]
+            
         return moves

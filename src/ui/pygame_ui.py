@@ -1,5 +1,4 @@
-import pygame
-import math
+import pygame,math,time
 
 from src.ai.minimax import Minimax
 from src.game.board import Board
