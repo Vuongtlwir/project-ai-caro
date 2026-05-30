@@ -6,12 +6,10 @@ from src.game.board import Board
 from src.game.constants import *
 from src.game.rules import get_game_result
 
-
 SIDE_PANEL = 300
 
 WIDTH = BOARD_SIZE * CELL_SIZE + SIDE_PANEL
 HEIGHT = BOARD_SIZE * CELL_SIZE + 80
-
 
 class CaroGameUI:
 
@@ -222,6 +220,84 @@ class CaroGameUI:
             (x0, y0, size, size),
             2
         )
+
+    # ================= LAST MOVE GLOW =================
+
+    def draw_last_move_glow(self):
+
+        if self.board.last_move is None:
+            return
+
+        r, c = self.board.last_move
+
+        x = self.offset_x + c * CELL_SIZE
+        y = self.offset_y + r * CELL_SIZE
+
+        piece = self.board.grid[r][c]
+
+        if piece == HUMAN:
+
+            color = (255, 80, 120)
+
+        else:
+
+            color = (0, 255, 200)
+
+        # pulse animation
+        pulse = (
+            math.sin(pygame.time.get_ticks() * 0.008) + 1
+        ) / 2
+
+        alpha = 35 + int(pulse * 25)
+
+        # glow mềm
+        glow_surface = pygame.Surface(
+            (CELL_SIZE, CELL_SIZE),
+            pygame.SRCALPHA
+        )
+
+        pygame.draw.rect(
+            glow_surface,
+            (*color, alpha),
+            (
+                2,
+                2,
+                CELL_SIZE - 4,
+                CELL_SIZE - 4
+            ),
+            border_radius=10
+        )
+
+        self.screen.blit(glow_surface, (x, y))
+
+        # viền ngoài mờ
+        pygame.draw.rect(
+            self.screen,
+            (*color, 120),
+            (
+                x + 1,
+                y + 1,
+                CELL_SIZE - 2,
+                CELL_SIZE - 2
+            ),
+            width=2,
+            border_radius=10
+        )
+
+        # viền sáng trong
+        pygame.draw.rect(
+            self.screen,
+            (255, 255, 255),
+            (
+                x + 4,
+                y + 4,
+                CELL_SIZE - 8,
+                CELL_SIZE - 8
+            ),
+            width=1,
+            border_radius=8
+        )
+
 
     # ================= WINNING =================
 
@@ -834,6 +910,8 @@ class CaroGameUI:
 
                 self.draw_grid()
 
+                self.draw_last_move_glow()
+
                 self.draw_winning_line()
 
                 self.draw_pieces()
@@ -842,6 +920,8 @@ class CaroGameUI:
 
                 self.draw_side_panel()
 
+
             pygame.display.update()
 
         pygame.quit()
+
