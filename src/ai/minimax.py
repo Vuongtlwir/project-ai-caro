@@ -264,8 +264,7 @@ class Minimax(
     # TẠO THREAT MẠNH CHO AI trước, nhưng vẫn chặn nếu player có threat tức thời.
     def is_dangerous_threat(self, board: Board, player):
 
-        double_open3 = 0
-
+        open3_count = 0
         for row in range(BOARD_SIZE):
             for col in range(BOARD_SIZE):
 
@@ -300,10 +299,9 @@ class Minimax(
                         return True
 
                     if length == 3 and open_ends == 2:
-                        double_open3 += 1
-                        if double_open3 >= 2:
-                            return True
-
+                        open3_count +=1
+        if open3_count >= 1:
+            return True
         return False
     # TÌM NƯỚC TẤN CÔNG CHIẾM ƯU THẾ NHANH (open 3, broken 3)
     def find_immediate_threat_block(self, board: Board):

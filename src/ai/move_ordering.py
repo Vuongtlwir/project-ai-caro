@@ -4,7 +4,7 @@ from src.game.board import Board
 
 from .types import Move
 from src.game.constants import *
-from .heuristic import CENTER_BONUS, NEIGHBOR_RADIUS
+from .heuristic import CENTER_BONUS, NEIGHBOR_RADIUS, OPPONENT_WEIGHT
 
 NEAREST_STONE_BONUS = 12
 
@@ -54,11 +54,19 @@ class MoveOrdering:
 
             tactical = self.quick_tactical_score(board, row, col)
             score += tactical
-
             # TĂNG ĐIỂM CHO NƯỚC ĐI TẠO THREAT MẠNH
             board.make_move_simulate(row, col, AI)
+            threat_score = self.count_threat_at(
+                board,
+                row,
+                col,
+                AI
+            )
+
+            score += threat_score * 5
+
             if self.is_dangerous_threat(board, AI):
-                score += 300_000  # tạo threat
+                score += 300_000
             board.undo_move_simulate(row, col)
 
             # CHỐNG THREAT CỦA player
@@ -67,7 +75,7 @@ class MoveOrdering:
                 board.make_move_simulate(row, col, AI)
 
                 if not self.is_dangerous_threat(board, HUMAN):
-                    score += 500000
+                    score += 500_000
 
                 board.undo_move_simulate(row, col)
 
