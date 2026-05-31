@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from src.game.board import Board
 from src.game.constants import *
 
-from .heuristic import WIN_SCORE
+from .heuristic import WIN_SCORE, BROKEN_FOUR_SCORE
 from .types import Move
 
 from .iterative_deepening import IterativeDeepening
@@ -40,7 +40,6 @@ class Minimax(
         self.nodes_evaluated = 0
 
     def search_root(self, board: Board, depth):
-
         self.start_time = time.perf_counter()
         self.time_up = False
 
@@ -83,9 +82,35 @@ class Minimax(
 
             board.undo_move_simulate(row, col)
 
-        # =========================================
+        # TẠO THREAT MẠNH CHO AI trước, nhưng vẫn chặn nếu player có threat tức thời
+        attack_move = self.find_dangerous_threat_move(board, AI)
+
+        # CHẶNG CÁC THREAT NGUY HIỂM NHẤT (open 4 / closed 4 / broken 4)
+        block_move = self.find_immediate_threat_block(board)
+        if block_move is not None:
+            return block_move, WIN_SCORE * 50 - 1
+
+        if len(board.move_history) == 1 and board.grid[board.move_history[0][0]][board.move_history[0][1]] == HUMAN:
+            return moves[0], 0
+
+        if attack_move is not None:
+            row, col = attack_move
+
+            board.make_move_simulate(row, col, AI)
+
+            attack_score = self.evaluate(board)
+
+            board.undo_move_simulate(row, col)
+
+            if attack_score > 300000:
+                return attack_move, attack_score
+
+        # TÌM NƯỚC TẤN CÔNG CHIẾM ƯU THẾ NHANH (open 3, broken 3)
+        best_tactical, tactical_score = self.find_best_tactical_move(board, AI)
+        if tactical_score >= 200_000:
+            return best_tactical, int(tactical_score)
+
         # MINIMAX
-        # =========================================
 
         for move in moves:
 
@@ -236,6 +261,105 @@ class Minimax(
                     break
 
             return int(value)
+    # TẠO THREAT MẠNH CHO AI trước, nhưng vẫn chặn nếu player có threat tức thời.
+    def is_dangerous_threat(self, board: Board, player):
+
+        open3_count = 0
+        for row in range(BOARD_SIZE):
+            for col in range(BOARD_SIZE):
+
+                if board.grid[row][col] != player:
+                    continue
+
+                for dr, dc in DIRECTIONS:
+
+                    if self.is_previous_same(board, row, col, dr, dc, player):
+                        continue
+
+                    length, open_ends = self.count_sequence(
+                        board,
+                        row,
+                        col,
+                        dr,
+                        dc,
+                        player
+                    )
+
+                    if length >= 4 and open_ends >= 1:
+                        return True
+
+                    if self.check_broken_pattern(
+                        board,
+                        row,
+                        col,
+                        dr,
+                        dc,
+                        player
+                    ) >= BROKEN_FOUR_SCORE:
+                        return True
+
+                    if length == 3 and open_ends == 2:
+                        open3_count +=1
+        if open3_count >= 1:
+            return True
+        return False
+    # TÌM NƯỚC TẤN CÔNG CHIẾM ƯU THẾ NHANH (open 3, broken 3)
+    def find_immediate_threat_block(self, board: Board):
+
+        best_move = None
+        best_score = -math.inf
+
+        for row, col in self.get_candidate_moves(board):
+
+            board.make_move_simulate(row, col, AI)
+
+            if not self.is_dangerous_threat(board, HUMAN):
+
+                score = self.evaluate(board)
+
+                if score > best_score:
+                    best_score = score
+                    best_move = (row, col)
+
+            board.undo_move_simulate(row, col)
+
+        return best_move
+    
+    def find_best_tactical_move(self, board: Board, player: int):
+
+        best_move = None
+        best_score = -math.inf
+
+        for row, col in self.get_candidate_moves(board):
+
+            score = self.quick_tactical_score(board, row, col)
+            if score > best_score:
+                best_score = score
+                best_move = (row, col)
+
+        return best_move, best_score
+
+    def find_dangerous_threat_move(self, board: Board, player: int):
+
+        best_move = None
+        best_score = -1
+
+        for row, col in self.get_candidate_moves(board):
+
+            board.make_move_simulate(row, col, player)
+
+            score = self.count_threat_at(board, row, col, player)
+
+            if self.is_dangerous_threat(board, player):
+                score += 500_000
+
+            if score > best_score:
+                best_score = score
+                best_move = (row, col)
+
+            board.undo_move_simulate(row, col)
+
+        return best_move
 
     def is_time_up(self):
 

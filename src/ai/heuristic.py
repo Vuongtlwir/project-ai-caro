@@ -15,12 +15,12 @@ PATTERN_SCORES = {
     (5, 2): WIN_SCORE,
     
     # Open 4 (2 ĐẦU ĐỀU MỞ : KHÔNG THỂ CHẶN)
-    (4, 2): 500_000,
+    (4, 2): 1_000_000,
     # Blocked 4 (CHẶN 1 ĐẦU)
-    (4, 1): 50_000,
+    (4, 1): 200_000,
     
     # Open 3 (2 ĐẦU ĐỀU MỞ)
-    (3, 2): 18_000,
+    (3, 2): 25_000,
     # Blocked 3 ( CHẶN 1 ĐẦU )
     (3, 1): 1_500,
     
@@ -35,15 +35,15 @@ PATTERN_SCORES = {
 }
 
 # Double threat bonus: ĐIỂM THƯỞNG CHO NHIỀU OPEN 3 OPEN 4
-DOUBLE_THREAT_BONUS = 100_000
+DOUBLE_THREAT_BONUS = 300_000
 
 
 # NGĂN CHẶN CÁC ĐIỂM QUAN TRỌNG (e.g., XX_XX, X_XXX) - KHOẢNG TRỐNG TRONG CHUỖI
 BROKEN_FOUR_SCORE = 100_000  # X_XXX or XX_XX pattern
-BROKEN_THREE_SCORE = 5_000   # X_XX or XX_X pattern
+BROKEN_THREE_SCORE = 8_000   # X_XX or XX_X pattern
 
 # MỨC ĐỘ ƯU TIÊN CHO CÁC MỐI ĐE DỌA TỪ ĐỐI THỦ
-OPPONENT_WEIGHT =  1.15
+OPPONENT_WEIGHT =  1.5
 
 # THƯỞNG THÊM NẾU KIỂM SOÁT ĐIỂM TRUNG TÂM
 CENTER_BONUS = 15
@@ -221,7 +221,7 @@ class HeuristicsMixin:
                         threats.append((length, open_ends))
         strong_threats = len([t for t in threats if t[0] >= 3])
         if strong_threats >=2:
-            return DOUBLE_THREAT_BONUS * (strong_threats -1)
+            return DOUBLE_THREAT_BONUS * strong_threats
         return 0
         
     
