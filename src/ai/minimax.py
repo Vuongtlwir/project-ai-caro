@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from src.game.board import Board
 from src.game.constants import *
 
-from .heuristic import WIN_SCORE, BROKEN_FOUR_SCORE
+from .heuristic import WIN_SCORE, BROKEN_FOUR_SCORE, BROKEN_THREE_SCORE
 from .types import Move
 
 from .iterative_deepening import IterativeDeepening
@@ -288,14 +288,15 @@ class Minimax(
                     if length >= 4 and open_ends >= 1:
                         return True
 
-                    if self.check_broken_pattern(
+                    broken_score = self.check_broken_pattern(
                         board,
                         row,
                         col,
                         dr,
                         dc,
                         player
-                    ) >= BROKEN_FOUR_SCORE:
+                    )
+                    if broken_score >= BROKEN_THREE_SCORE:
                         return True
 
                     if length == 3 and open_ends == 2:

@@ -194,14 +194,27 @@ class HeuristicsMixin:
 
         score = 0
 
-        if "XXXX_" in s or "_XXXX" in s:
-            score += BROKEN_FOUR_SCORE
+        broken_four_patterns = {"XXX_X", "X_XXX", "XX_XX"}
+        broken_three_patterns = {"XX_X_", "_X_XX", "X_XX_", "_XX_X"}
 
-        if "XXX_X" in s or "X_XXX" in s or "XX_XX" in s:
-            score += BROKEN_FOUR_SCORE
+        def open_ends(start_index):
+            ends = 0
+            left = s[start_index - 1] if start_index - 1 >= 0 else "O"
+            right = s[start_index + 5] if start_index + 5 < len(s) else "O"
+            if left == "_":
+                ends += 1
+            if right == "_":
+                ends += 1
+            return ends
 
-        if "XX_X_" in s or "_X_XX" in s:
-            score += BROKEN_THREE_SCORE
+        for start in range(len(s) - 4):
+            segment = s[start:start + 5]
+            if segment in broken_four_patterns:
+                if open_ends(start) >= 1:
+                    score += BROKEN_FOUR_SCORE
+            elif segment in broken_three_patterns:
+                if open_ends(start) == 2:
+                    score += BROKEN_THREE_SCORE
 
         return score
     # Đếm số vị trí player có nhiều open 3 , open 4 có sự đe dọa kép mạnh
