@@ -64,12 +64,12 @@ class Minimax(
 
             board.make_move_simulate(row, col, AI)
             if board.get_winner() == AI:
-                board.undo_move_simulate(row, col)
+                board.undo_move(row, col)
                 return move, WIN_SCORE
 
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
-        # CHẶN HUMAN THẮNG NGAY
+        # CHẶN PLAYER THẮNG NGAY
         for move in moves:
 
             row, col = move
@@ -77,10 +77,10 @@ class Minimax(
             board.make_move_simulate(row, col, HUMAN)
 
             if board.get_winner() == HUMAN:
-                board.undo_move_simulate(row, col)
+                board.undo_move(row, col)
                 return move, WIN_SCORE*100 - 1
 
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
         # TẠO THREAT MẠNH CHO AI trước, nhưng vẫn chặn nếu player có threat tức thời
         attack_move = self.find_dangerous_threat_move(board, AI)
@@ -100,7 +100,7 @@ class Minimax(
 
             attack_score = self.evaluate(board)
 
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
             if attack_score > 300000:
                 return attack_move, attack_score
@@ -129,7 +129,7 @@ class Minimax(
                 False
             )
 
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
             self.move_scores[move] = score
 
@@ -203,7 +203,7 @@ class Minimax(
                     )
                 )
 
-                board.undo_move_simulate(row, col)
+                board.undo_move(row, col)
 
                 alpha = max(alpha, value)
 
@@ -244,7 +244,7 @@ class Minimax(
                     )
                 )
 
-                board.undo_move_simulate(row, col)
+                board.undo_move(row, col)
 
                 beta = min(beta, value)
 
@@ -322,7 +322,7 @@ class Minimax(
                     best_score = score
                     best_move = (row, col)
 
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
         return best_move
     
@@ -358,7 +358,7 @@ class Minimax(
                 best_score = score
                 best_move = (row, col)
 
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
         return best_move
 

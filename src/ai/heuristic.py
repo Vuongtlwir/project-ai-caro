@@ -60,19 +60,19 @@ class HeuristicsMixin:
         board.make_move_simulate(row, col, HUMAN)
 
         if board.get_winner() == HUMAN:
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
             return WIN_SCORE
 
-        board.undo_move_simulate(row, col)
+        board.undo_move(row, col)
         score = 0
 
         board.make_move_simulate(row, col, AI)
         ai_threat = self.count_threat_at(board, row, col, AI)
-        board.undo_move_simulate(row, col)
+        board.undo_move(row, col)
         
         board.make_move_simulate(row, col, HUMAN)
         human_threat = self.count_threat_at(board, row, col, HUMAN)
-        board.undo_move_simulate(row, col)
+        board.undo_move(row, col)
 
         score = ai_threat + int(human_threat * OPPONENT_WEIGHT)
 

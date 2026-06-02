@@ -67,7 +67,7 @@ class MoveOrdering:
 
             if self.is_dangerous_threat(board, AI):
                 score += 300_000
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
 
             # CHỐNG THREAT CỦA player
             if self.is_dangerous_threat(board, HUMAN):
@@ -77,7 +77,7 @@ class MoveOrdering:
                 if not self.is_dangerous_threat(board, HUMAN):
                     score += 500_000
 
-                board.undo_move_simulate(row, col)
+                board.undo_move(row, col)
 
             
             
