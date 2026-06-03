@@ -1,0 +1,224 @@
+[33mcommit 00bd0cdef197f259e56b7d4816370f8ed898fc50[m[33m ([m[1;35mrefs/stash[m[33m)[m
+Merge: 4b0d096 f970090
+Author: quangngv <quanghot31ao@gmail.com>
+Date:   Wed Jun 3 09:25:14 2026 +0700
+
+    WIP on main: 4b0d096 Toi uu code
+
+[33mcommit f970090802191956dea108e4e681c5ecdb4b0f8b[m
+Author: quangngv <quanghot31ao@gmail.com>
+Date:   Wed Jun 3 09:25:14 2026 +0700
+
+    index on main: 4b0d096 Toi uu code
+
+[33mcommit 4b0d0966177ec58eb75ad6e47f48671fe4d3deca[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Vuong <tranlevuongwir@gmail.com>
+Date:   Tue Jun 2 22:16:47 2026 +0700
+
+    Toi uu code
+
+M	src/ai/__pycache__/heuristic.cpython-311.pyc
+M	src/ai/__pycache__/minimax.cpython-311.pyc
+M	src/ai/__pycache__/move_ordering.cpython-311.pyc
+M	src/ai/__pycache__/types.cpython-311.pyc
+M	src/ai/heuristic.py
+M	src/ai/minimax.py
+M	src/ai/move_ordering.py
+M	src/ai/types.py
+M	src/game/__pycache__/board.cpython-311.pyc
+M	src/game/board.py
+
+[33mcommit 8874562abf1b23f422e9fe417edd93b3eaf920cd[m
+Author: Vuong <tranlevuongwir@gmail.com>
+Date:   Tue Jun 2 18:36:14 2026 +0700
+
+    fix bug AI no blocked X_XX
+
+M	src/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/heuristic.cpython-311.pyc
+M	src/ai/__pycache__/iterative_deepening.cpython-311.pyc
+M	src/ai/__pycache__/killer_heuristic.cpython-311.pyc
+M	src/ai/__pycache__/minimax.cpython-311.pyc
+M	src/ai/__pycache__/move_ordering.cpython-311.pyc
+M	src/ai/__pycache__/types.cpython-311.pyc
+M	src/ai/heuristic.py
+M	src/ai/minimax.py
+M	src/game/__pycache__/__init__.cpython-311.pyc
+M	src/game/__pycache__/board.cpython-311.pyc
+M	src/game/__pycache__/constants.cpython-311.pyc
+M	src/game/__pycache__/rules.cpython-311.pyc
+M	src/game/__pycache__/win_checker.cpython-311.pyc
+D	src/game/move_generator.py
+M	src/ui/__pycache__/__init__.cpython-311.pyc
+M	src/ui/__pycache__/pygame_ui.cpython-311.pyc
+D	src/utils/__init__.py
+D	src/utils/helpers.py
+D	src/utils/timer.py
+
+[33mcommit 00eb0c5c5f7ec9d9528614bd08bb280873bee912[m
+Merge: c8195f7 80c88f9
+Author: Vuongtlwir <tranlevuongwir@gmail.com>
+Date:   Sun May 31 13:40:26 2026 +0700
+
+    Merge pull request #1 from Vuongtlwir/test
+    
+    Test
+
+[33mcommit 80c88f969e3aa107501f46a3e52cfad948f22cd2[m[33m ([m[1;31morigin/test[m[33m)[m
+Author: Vuong <tranlevuongwir@gmail.com>
+Date:   Sat May 30 16:56:36 2026 +0700
+
+    Update AI
+
+M	src/ai/__pycache__/heuristic.cpython-311.pyc
+M	src/ai/__pycache__/minimax.cpython-311.pyc
+M	src/ai/__pycache__/move_ordering.cpython-311.pyc
+M	src/ai/heuristic.py
+M	src/ai/minimax.py
+M	src/ai/move_ordering.py
+M	src/ui/__pycache__/pygame_ui.cpython-311.pyc
+
+[33mcommit f69bdac48df7e3597712ae571eca0622217dabf0[m
+Author: Vuong <tranlevuongwir@gmail.com>
+Date:   Sat May 30 15:52:18 2026 +0700
+
+     giam thoi gian va so nodes duyet cua AI
+
+M	src/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/heuristic.cpython-311.pyc
+M	src/ai/__pycache__/iterative_deepening.cpython-311.pyc
+M	src/ai/__pycache__/killer_heuristic.cpython-311.pyc
+M	src/ai/__pycache__/minimax.cpython-311.pyc
+M	src/ai/__pycache__/move_ordering.cpython-311.pyc
+M	src/ai/__pycache__/types.cpython-311.pyc
+M	src/ai/heuristic.py
+M	src/ai/minimax.py
+M	src/ai/move_ordering.py
+M	src/game/__pycache__/__init__.cpython-311.pyc
+M	src/game/__pycache__/board.cpython-311.pyc
+M	src/game/__pycache__/constants.cpython-311.pyc
+M	src/game/__pycache__/rules.cpython-311.pyc
+M	src/game/__pycache__/win_checker.cpython-311.pyc
+M	src/ui/__pycache__/__init__.cpython-311.pyc
+M	src/ui/__pycache__/pygame_ui.cpython-311.pyc
+M	src/ui/pygame_ui.py
+A	tempCodeRunnerFile.py
+
+[33mcommit c8195f7d1cab21b97908b80acfdc7cead1e88898[m
+Author: lemaiphong <lephongaz@gmail.com>
+Date:   Sat May 30 10:04:31 2026 +0700
+
+    Add neon glow effect for last move
+
+M	src/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/heuristic.cpython-311.pyc
+M	src/ai/__pycache__/iterative_deepening.cpython-311.pyc
+M	src/ai/__pycache__/killer_heuristic.cpython-311.pyc
+M	src/ai/__pycache__/minimax.cpython-311.pyc
+M	src/ai/__pycache__/move_ordering.cpython-311.pyc
+M	src/ai/__pycache__/types.cpython-311.pyc
+M	src/game/__pycache__/__init__.cpython-311.pyc
+M	src/game/__pycache__/board.cpython-311.pyc
+M	src/game/__pycache__/constants.cpython-311.pyc
+M	src/game/__pycache__/rules.cpython-311.pyc
+M	src/game/__pycache__/win_checker.cpython-311.pyc
+M	src/ui/__pycache__/__init__.cpython-311.pyc
+M	src/ui/__pycache__/pygame_ui.cpython-311.pyc
+M	src/ui/pygame_ui.py
+
+[33mcommit 40d7ae162167585d0eaef3d323cb2415f504c3ec[m[33m ([m[1;31morigin/soumek[m[33m, [m[1;32msoumek[m[33m)[m
+Author: quangngv <quanghot31ao@gmail.com>
+Date:   Sat May 30 03:28:36 2026 +0700
+
+    do helpers.py
+
+A	src/utils/__pycache__/helpers.cpython-313.pyc
+M	src/utils/helpers.py
+
+[33mcommit 25e00a474623a6bacbed6ac5f0ba805f65b1f3e2[m
+Author: quangngv <quanghot31ao@gmail.com>
+Date:   Sat May 30 03:23:35 2026 +0700
+
+    do timer.py
+
+A	main.md
+A	src/__pycache__/__init__.cpython-313.pyc
+A	src/ai/__pycache__/__init__.cpython-313.pyc
+A	src/ai/__pycache__/heuristic.cpython-313.pyc
+A	src/ai/__pycache__/iterative_deepening.cpython-313.pyc
+A	src/ai/__pycache__/killer_heuristic.cpython-313.pyc
+A	src/ai/__pycache__/minimax.cpython-313.pyc
+A	src/ai/__pycache__/move_ordering.cpython-313.pyc
+A	src/ai/__pycache__/types.cpython-313.pyc
+M	src/ai/iterative_deepening.py
+M	src/ai/minimax.py
+A	src/game/__pycache__/__init__.cpython-313.pyc
+A	src/game/__pycache__/board.cpython-313.pyc
+A	src/game/__pycache__/constants.cpython-313.pyc
+A	src/game/__pycache__/rules.cpython-313.pyc
+A	src/game/__pycache__/win_checker.cpython-313.pyc
+M	src/game/constants.py
+A	src/ui/__pycache__/__init__.cpython-313.pyc
+A	src/ui/__pycache__/pygame_ui.cpython-313.pyc
+A	src/utils/__pycache__/__init__.cpython-313.pyc
+A	src/utils/__pycache__/timer.cpython-313.pyc
+M	src/utils/timer.py
+
+[33mcommit 187c0c63119ce4a72e94493e7f3b95ab6ceb2d40[m
+Author: Vuong <tranlevuongwir@gmail.com>
+Date:   Thu May 28 15:38:16 2026 +0700
+
+    fix bug ko duyet toan ban co heuristic , cleart -> clear iterative_deepening , cach chon nuoc di cua AI def ai_move
+
+M	src/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/heuristic.cpython-311.pyc
+M	src/ai/__pycache__/iterative_deepening.cpython-311.pyc
+M	src/ai/__pycache__/killer_heuristic.cpython-311.pyc
+M	src/ai/__pycache__/minimax.cpython-311.pyc
+M	src/ai/__pycache__/move_ordering.cpython-311.pyc
+M	src/ai/__pycache__/types.cpython-311.pyc
+M	src/ai/heuristic.py
+M	src/ai/iterative_deepening.py
+M	src/game/__pycache__/__init__.cpython-311.pyc
+M	src/game/__pycache__/board.cpython-311.pyc
+M	src/game/__pycache__/constants.cpython-311.pyc
+M	src/game/__pycache__/rules.cpython-311.pyc
+M	src/game/__pycache__/win_checker.cpython-311.pyc
+M	src/ui/__pycache__/__init__.cpython-311.pyc
+M	src/ui/__pycache__/pygame_ui.cpython-311.pyc
+M	src/ui/pygame_ui.py
+
+[33mcommit 34af2fb1fd58d0df56bbb5f116acd385c4897c5f[m
+Author: Vuong <tranlevuongwir@gmail.com>
+Date:   Mon May 25 17:10:34 2026 +0700
+
+    update ai_move pygame-ui.py and toi uu board
+
+M	src/__pycache__/__init__.cpython-311.pyc
+M	src/ai/__pycache__/__init__.cpython-311.pyc
+A	src/ai/__pycache__/heuristic.cpython-311.pyc
+A	src/ai/__pycache__/iterative_deepening.cpython-311.pyc
+A	src/ai/__pycache__/killer_heuristic.cpython-311.pyc
+A	src/ai/__pycache__/minimax.cpython-311.pyc
+A	src/ai/__pycache__/move_ordering.cpython-311.pyc
+A	src/ai/__pycache__/types.cpython-311.pyc
+M	src/ai/heuristic.py
+M	src/ai/iterative_deepening.py
+M	src/ai/killer_heuristic.py
+M	src/ai/minimax.py
+M	src/ai/move_ordering.py
+M	src/game/__pycache__/__init__.cpython-311.pyc
+M	src/game/__pycache__/board.cpython-311.pyc
+M	src/game/__pycache__/constants.cpython-311.pyc
+M	src/game/__pycache__/rules.cpython-311.pyc
+M	src/game/__pycache__/win_checker.cpython-311.pyc
+M	src/game/board.py
+M	src/ui/__pycache__/__init__.cpython-311.pyc
+M	src/ui/__pycache__/pygame_ui.cpython-311.pyc
+M	src/ui/pygame_ui.py
+
+[33mcommit 4298378c6735c50d66a

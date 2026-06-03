@@ -1,0 +1,243 @@
+[1mdiff --git a/src/ui/pygame_ui.py b/src/ui/pygame_ui.py[m
+[1mindex 4167c56..0776080 100644[m
+[1m--- a/src/ui/pygame_ui.py[m
+[1m+++ b/src/ui/pygame_ui.py[m
+[36m@@ -1,6 +1,7 @@[m
+ import pygame,math,time[m
+ [m
+ from src.ai.minimax import Minimax[m
+[32m+[m[32mfrom src.ai.easy_ai import EasyAI[m
+ from src.game.board import Board[m
+ from src.game.constants import *[m
+ from src.game.rules import get_game_result[m
+[36m@@ -61,14 +62,21 @@[m [mclass CaroGameUI:[m
+         # MENU[m
+         self.pvp_button = pygame.Rect([m
+             WIDTH // 2 - 160,[m
+[31m-            260,[m
+[32m+[m[32m            240,[m
+             320,[m
+             55[m
+         )[m
+ [m
+[31m-        self.pvai_button = pygame.Rect([m
+[32m+[m[32m        self.pvai_easy_button = pygame.Rect([m
+             WIDTH // 2 - 160,[m
+[31m-            330,[m
+[32m+[m[32m            310,[m
+[32m+[m[32m            320,[m
+[32m+[m[32m            55[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m        self.pvai_hard_button = pygame.Rect([m
+[32m+[m[32m            WIDTH // 2 - 160,[m
+[32m+[m[32m            380,[m
+             320,[m
+             55[m
+         )[m
+[36m@@ -77,7 +85,12 @@[m [mclass CaroGameUI:[m
+         self.restart_button = pygame.Rect(0, 0, 0, 0)[m
+         self.menu_button = pygame.Rect(0, 0, 0, 0)[m
+ [m
+[31m-    # ================= BACKGROUND =================[m
+[32m+[m[32m        # CONFIRM DIALOG[m
+[32m+[m[32m        self.confirm_action = None  # None | "restart" | "menu"[m
+[32m+[m[32m        self.confirm_yes_button = pygame.Rect(0, 0, 0, 0)[m
+[32m+[m[32m        self.confirm_no_button = pygame.Rect(0, 0, 0, 0)[m
+[32m+[m
+[32m+[m[32m    #  BACKGROUND[m[41m [m
+ [m
+     def draw_background(self):[m
+ [m
+[36m@@ -96,7 +109,7 @@[m [mclass CaroGameUI:[m
+                 (WIDTH, i)[m
+             )[m
+ [m
+[31m-    # ================= BUTTON =================[m
+[32m+[m[32m    #  BUTTON[m[41m [m
+ [m
+     def draw_button(self, rect, text, color):[m
+ [m
+[36m@@ -125,7 +138,7 @@[m [mclass CaroGameUI:[m
+             )[m
+         )[m
+ [m
+[31m-    # ================= MENU =================[m
+[32m+[m[32m    #  MENU[m[41m [m
+ [m
+     def draw_menu(self):[m
+ [m
+[36m@@ -152,8 +165,14 @@[m [mclass CaroGameUI:[m
+         )[m
+ [m
+         self.draw_button([m
+[31m-            self.pvai_button,[m
+[31m-            "PLAY VS AI",[m
+[32m+[m[32m            self.pvai_easy_button,[m
+[32m+[m[32m            "PLAY AI - EASY",[m
+[32m+[m[32m            (0, 255, 140)[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m        self.draw_button([m
+[32m+[m[32m            self.pvai_hard_button,[m
+[32m+[m[32m            "PLAY AI - HARD",[m
+             (255, 80, 120)[m
+         )[m
+ [m
+[36m@@ -164,12 +183,19 @@[m [mclass CaroGameUI:[m
+             self.ai_enabled = False[m
+             self.in_menu = False[m
+ [m
+[31m-        elif self.pvai_button.collidepoint(pos):[m
+[32m+[m[32m        elif self.pvai_easy_button.collidepoint(pos):[m
+[32m+[m
+[32m+[m[32m            self.ai_enabled = True[m
+[32m+[m[32m            self.ai = EasyAI(mistake_chance=0.25)[m
+[32m+[m[32m            self.in_menu = False[m
+[32m+[m
+[32m+[m[32m        elif self.pvai_hard_button.collidepoint(pos):[m
+ [m
+             self.ai_enabled = True[m
+[32m+[m[32m            self.ai = Minimax(max_depth=4, time_limit_sec=2.0)[m
+             self.in_menu = False[m
+ [m
+[31m-    # ================= GRID =================[m
+[32m+[m[32m    #  GRID[m[41m [m
+ [m
+     def draw_grid(self):[m
+ [m
+[36m@@ -220,7 +246,7 @@[m [mclass CaroGameUI:[m
+             2[m
+         )[m
+ [m
+[31m-    # ================= LAST MOVE GLOW =================[m
+[32m+[m[32m    #  LAST MOVE GLOW[m[41m [m
+ [m
+     def draw_last_move_glow(self):[m
+ [m
+[36m@@ -298,7 +324,7 @@[m [mclass CaroGameUI:[m
+         )[m
+ [m
+ [m
+[31m-    # ================= WINNING =================[m
+[32m+[m[32m    #  WINNING[m[41m [m
+ [m
+     def find_winning_cells(self, player):[m
+ [m
+[36m@@ -415,7 +441,7 @@[m [mclass CaroGameUI:[m
+             4[m
+         )[m
+ [m
+[31m-    # ================= PIECES =================[m
+[32m+[m[32m    #  PIECES[m[41m [m
+ [m
+     def draw_pieces(self):[m
+ [m
+[36m@@ -469,7 +495,7 @@[m [mclass CaroGameUI:[m
+                         4[m
+                     )[m
+ [m
+[31m-    # ================= HOVER =================[m
+[32m+[m[32m    #  HOVER[m[41m [m
+ [m
+     def draw_hover_piece(self):[m
+ [m
+[36m@@ -548,7 +574,7 @@[m [mclass CaroGameUI:[m
+ [m
+         self.screen.blit(preview, (x, y))[m
+ [m
+[31m-    # ================= SIDE PANEL =================[m
+[32m+[m[32m    #  SIDE PANEL[m[41m [m
+ [m
+     def draw_side_panel(self):[m
+ [m
+[36m@@ -717,35 +743,110 @@[m [mclass CaroGameUI:[m
+             (panel_x + 20, self.offset_y + 375)[m
+         )[m
+ [m
+[31m-        if self.game_over:[m
+[32m+[m[32m        # RESTART / MENU luôn hiển thị[m
+[32m+[m[32m        self.restart_button = pygame.Rect([m
+[32m+[m[32m            panel.centerx - 70,[m
+[32m+[m[32m            self.offset_y + 430,[m
+[32m+[m[32m            140,[m
+[32m+[m[32m            45[m
+[32m+[m[32m        )[m
+ [m
+[31m-            self.restart_button = pygame.Rect([m
+[31m-                panel.centerx - 70,[m
+[31m-                self.offset_y + 430,[m
+[31m-                140,[m
+[31m-                45[m
+[31m-            )[m
+[32m+[m[32m        self.menu_button = pygame.Rect([m
+[32m+[m[32m            panel.centerx - 70,[m
+[32m+[m[32m            self.offset_y + 490,[m
+[32m+[m[32m            140,[m
+[32m+[m[32m            45[m
+[32m+[m[32m        )[m
+ [m
+[31m-            self.menu_button = pygame.Rect([m
+[31m-                panel.centerx - 70,[m
+[31m-                self.offset_y + 490,[m
+[31m-                140,[m
+[31m-                45[m
+[31m-            )[m
+[32m+[m[32m        self.draw_button([m
+[32m+[m[32m            self.restart_button,[m
+[32m+[m[32m            "RESTART",[m
+[32m+[m[32m            (0, 255, 200)[m
+[32m+[m[32m        )[m
+ [m
+[31m-            self.draw_button([m
+[31m-                self.restart_button,[m
+[31m-                "RESTART",[m
+[31m-                (0, 255, 200)[m
+[31m-            )[m
+[32m+[m[32m        self.draw_button([m
+[32m+[m[32m            self.menu_button,[m
+[32m+[m[32m            "MENU",[m
+[32m+[m[32m            (255, 80, 120)[m
+[32m+[m[32m        )[m
+ [m
+[31m-            self.draw_button([m
+[31m-                self.menu_button,[m
+[31m-                "MENU",[m
+[31m-                (255, 80, 120)[m
+[32m+[m[32m    #  CONFIRM DIALOG[m[41m [m
+[32m+[m
+[32m+[m[32m    def draw_confirm_dialog(self):[m
+[32m+[m
+[32m+[m[32m        if self.confirm_action is None:[m
+[32m+[m[32m            return[m
+[32m+[m
+[32m+[m[32m        # lớp phủ mờ[m
+[32m+[m[32m        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)[m
+[32m+[m[32m        overlay.fill((0, 0, 0, 170))[m
+[32m+[m[32m        self.screen.blit(overlay, (0, 0))[m
+[32m+[m
+[32m+[m[32m        # hộp thoại[m
+[32m+[m[32m        box_w, box_h = 420, 200[m
+[32m+[m[32m        box = pygame.Rect([m
+[32m+[m[32m            WIDTH // 2 - box_w // 2,[m
+[32m+[m[32m            HEIGHT // 2 - box_h // 2,[m
+[32m+[m[32m            box_w,[m
+[32m+[m[32m            box_h[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m        pygame.draw.rect([m
+[32m+[m[32m            self.screen,[m
+[32m+[m[32m            (18, 18, 28),[m
+[32m+[m[32m            box,[m
+[32m+[m[32m            border_radius=15[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m        pygame.draw.rect([m
+[32m+[m[32m            self.screen,[m
+[32m+[m[32m            (0, 255, 200),[m
+[32m+[m[32m            box,[m
+[32m+[m[32m            2,[m
+[32m+[m[32m            border_radius=15[m
+[32m+[m[32m        )[m
+[32m+[m
+[32m+[m[32m     

@@ -2,6 +2,7 @@ import pygame
 import math
 
 from src.ai.minimax import Minimax
+from src.ai.easy_ai import EasyAI
 from src.game.board import Board
 from src.game.constants import *
 from src.game.rules import get_game_result
@@ -64,14 +65,21 @@ class CaroGameUI:
         # MENU
         self.pvp_button = pygame.Rect(
             WIDTH // 2 - 160,
-            260,
+            240,
             320,
             55
         )
 
-        self.pvai_button = pygame.Rect(
+        self.pvai_easy_button = pygame.Rect(
             WIDTH // 2 - 160,
-            330,
+            310,
+            320,
+            55
+        )
+
+        self.pvai_hard_button = pygame.Rect(
+            WIDTH // 2 - 160,
+            380,
             320,
             55
         )
@@ -80,7 +88,12 @@ class CaroGameUI:
         self.restart_button = pygame.Rect(0, 0, 0, 0)
         self.menu_button = pygame.Rect(0, 0, 0, 0)
 
-    # ================= BACKGROUND =================
+        # CONFIRM DIALOG
+        self.confirm_action = None  # None | "restart" | "menu"
+        self.confirm_yes_button = pygame.Rect(0, 0, 0, 0)
+        self.confirm_no_button = pygame.Rect(0, 0, 0, 0)
+
+    #  BACKGROUND 
 
     def draw_background(self):
 
@@ -99,7 +112,7 @@ class CaroGameUI:
                 (WIDTH, i)
             )
 
-    # ================= BUTTON =================
+    #  BUTTON 
 
     def draw_button(self, rect, text, color):
 
@@ -128,7 +141,7 @@ class CaroGameUI:
             )
         )
 
-    # ================= MENU =================
+    #  MENU 
 
     def draw_menu(self):
 
@@ -155,8 +168,14 @@ class CaroGameUI:
         )
 
         self.draw_button(
-            self.pvai_button,
-            "PLAY VS AI",
+            self.pvai_easy_button,
+            "PLAY AI - EASY",
+            (0, 255, 140)
+        )
+
+        self.draw_button(
+            self.pvai_hard_button,
+            "PLAY AI - HARD",
             (255, 80, 120)
         )
 
@@ -167,12 +186,19 @@ class CaroGameUI:
             self.ai_enabled = False
             self.in_menu = False
 
-        elif self.pvai_button.collidepoint(pos):
+        elif self.pvai_easy_button.collidepoint(pos):
 
             self.ai_enabled = True
+            self.ai = EasyAI(mistake_chance=0.25)
             self.in_menu = False
 
-    # ================= GRID =================
+        elif self.pvai_hard_button.collidepoint(pos):
+
+            self.ai_enabled = True
+            self.ai = Minimax(max_depth=4, time_limit_sec=2.0)
+            self.in_menu = False
+
+    #  GRID 
 
     def draw_grid(self):
 
@@ -222,6 +248,84 @@ class CaroGameUI:
             (x0, y0, size, size),
             2
         )
+
+    # ================= LAST MOVE GLOW =================
+
+    def draw_last_move_glow(self):
+
+        if self.board.last_move is None:
+            return
+
+        r, c = self.board.last_move
+
+        x = self.offset_x + c * CELL_SIZE
+        y = self.offset_y + r * CELL_SIZE
+
+        piece = self.board.grid[r][c]
+
+        if piece == HUMAN:
+
+            color = (255, 80, 120)
+
+        else:
+
+            color = (0, 255, 200)
+
+        # pulse animation
+        pulse = (
+            math.sin(pygame.time.get_ticks() * 0.008) + 1
+        ) / 2
+
+        alpha = 35 + int(pulse * 25)
+
+        # glow mềm
+        glow_surface = pygame.Surface(
+            (CELL_SIZE, CELL_SIZE),
+            pygame.SRCALPHA
+        )
+
+        pygame.draw.rect(
+            glow_surface,
+            (*color, alpha),
+            (
+                2,
+                2,
+                CELL_SIZE - 4,
+                CELL_SIZE - 4
+            ),
+            border_radius=10
+        )
+
+        self.screen.blit(glow_surface, (x, y))
+
+        # viền ngoài mờ
+        pygame.draw.rect(
+            self.screen,
+            (*color, 120),
+            (
+                x + 1,
+                y + 1,
+                CELL_SIZE - 2,
+                CELL_SIZE - 2
+            ),
+            width=2,
+            border_radius=10
+        )
+
+        # viền sáng trong
+        pygame.draw.rect(
+            self.screen,
+            (255, 255, 255),
+            (
+                x + 4,
+                y + 4,
+                CELL_SIZE - 8,
+                CELL_SIZE - 8
+            ),
+            width=1,
+            border_radius=8
+        )
+
 
     # ================= WINNING =================
 
@@ -340,7 +444,7 @@ class CaroGameUI:
             4
         )
 
-    # ================= PIECES =================
+    #  PIECES 
 
     def draw_pieces(self):
 
@@ -394,7 +498,7 @@ class CaroGameUI:
                         4
                     )
 
-    # ================= HOVER =================
+    #  HOVER 
 
     def draw_hover_piece(self):
 
@@ -473,7 +577,7 @@ class CaroGameUI:
 
         self.screen.blit(preview, (x, y))
 
-    # ================= SIDE PANEL =================
+    #  SIDE PANEL 
 
     def draw_side_panel(self):
 
@@ -642,35 +746,110 @@ class CaroGameUI:
             (panel_x + 20, self.offset_y + 375)
         )
 
-        if self.game_over:
+        # RESTART / MENU luôn hiển thị
+        self.restart_button = pygame.Rect(
+            panel.centerx - 70,
+            self.offset_y + 430,
+            140,
+            45
+        )
 
-            self.restart_button = pygame.Rect(
-                panel.centerx - 70,
-                self.offset_y + 430,
-                140,
-                45
+        self.menu_button = pygame.Rect(
+            panel.centerx - 70,
+            self.offset_y + 490,
+            140,
+            45
+        )
+
+        self.draw_button(
+            self.restart_button,
+            "RESTART",
+            (0, 255, 200)
+        )
+
+        self.draw_button(
+            self.menu_button,
+            "MENU",
+            (255, 80, 120)
+        )
+
+    #  CONFIRM DIALOG 
+
+    def draw_confirm_dialog(self):
+
+        if self.confirm_action is None:
+            return
+
+        # lớp phủ mờ
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 170))
+        self.screen.blit(overlay, (0, 0))
+
+        # hộp thoại
+        box_w, box_h = 420, 200
+        box = pygame.Rect(
+            WIDTH // 2 - box_w // 2,
+            HEIGHT // 2 - box_h // 2,
+            box_w,
+            box_h
+        )
+
+        pygame.draw.rect(
+            self.screen,
+            (18, 18, 28),
+            box,
+            border_radius=15
+        )
+
+        pygame.draw.rect(
+            self.screen,
+            (0, 255, 200),
+            box,
+            2,
+            border_radius=15
+        )
+
+        if self.confirm_action == "restart":
+            msg = "RESTART GAME?"
+        else:
+            msg = "BACK TO MENU?"
+
+        msg_render = self.big_font.render(msg, True, (255, 255, 255))
+        self.screen.blit(
+            msg_render,
+            (
+                box.centerx - msg_render.get_width() // 2,
+                box.y + 35
             )
+        )
 
-            self.menu_button = pygame.Rect(
-                panel.centerx - 70,
-                self.offset_y + 490,
-                140,
-                45
-            )
+        self.confirm_yes_button = pygame.Rect(
+            box.centerx - 150,
+            box.y + 120,
+            130,
+            45
+        )
 
-            self.draw_button(
-                self.restart_button,
-                "RESTART",
-                (0, 255, 200)
-            )
+        self.confirm_no_button = pygame.Rect(
+            box.centerx + 20,
+            box.y + 120,
+            130,
+            45
+        )
 
-            self.draw_button(
-                self.menu_button,
-                "MENU",
-                (255, 80, 120)
-            )
+        self.draw_button(
+            self.confirm_yes_button,
+            "YES",
+            (0, 255, 140)
+        )
 
-    # ================= AI =================
+        self.draw_button(
+            self.confirm_no_button,
+            "NO",
+            (255, 80, 120)
+        )
+
+    #  AI 
 
     def ai_move(self):
 
@@ -702,7 +881,7 @@ class CaroGameUI:
         else:
 
             self.board.switch_player()
-    # ================= AI UPDATE =================
+    #  AI UPDATE 
 
     def update_ai(self):
 
@@ -720,32 +899,55 @@ class CaroGameUI:
             self.ai_thinking = False
             self.ai_move()
 
-    # ================= INPUT =================
+    #  ACTIONS 
+
+    def do_restart(self):
+
+        self.board.reset()
+
+        self.game_over = False
+        self.winner = None
+        self.winning_cells = []
+        self.move_count = 0
+        self.ai_thinking = False
+
+    def do_menu(self):
+
+        self.do_restart()
+        self.in_menu = True
+
+    #  INPUT 
 
     def handle_click(self, pos):
 
+        # Đang mở hộp xác nhận -> chỉ xử lý YES / NO
+        if self.confirm_action is not None:
+
+            if self.confirm_yes_button.collidepoint(pos):
+
+                if self.confirm_action == "restart":
+                    self.do_restart()
+                elif self.confirm_action == "menu":
+                    self.do_menu()
+
+                self.confirm_action = None
+
+            elif self.confirm_no_button.collidepoint(pos):
+
+                self.confirm_action = None
+
+            return
+
+        # RESTART / MENU luôn bấm được -> hỏi xác nhận
+        if self.restart_button.collidepoint(pos):
+            self.confirm_action = "restart"
+            return
+
+        if self.menu_button.collidepoint(pos):
+            self.confirm_action = "menu"
+            return
+
         if self.game_over:
-
-            if self.restart_button.collidepoint(pos):
-
-                self.board.reset()
-
-                self.game_over = False
-                self.winner = None
-                self.winning_cells = []
-                self.move_count = 0
-
-            elif self.menu_button.collidepoint(pos):
-
-                self.board.reset()
-
-                self.game_over = False
-                self.winner = None
-                self.winning_cells = []
-                self.move_count = 0
-
-                self.in_menu = True
-
             return
 
         if (
@@ -798,7 +1000,7 @@ class CaroGameUI:
             self.ai_thinking = True
             self.ai_think_start = pygame.time.get_ticks()
 
-    # ================= MAIN LOOP =================
+    #  MAIN LOOP 
 
     def run(self):
 
@@ -821,7 +1023,7 @@ class CaroGameUI:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.handle_click(event.pos)
 
-            if not self.in_menu:
+            if not self.in_menu and self.confirm_action is None:
                 self.update_ai()
 
             if self.in_menu:
