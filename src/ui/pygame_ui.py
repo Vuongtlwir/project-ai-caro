@@ -93,6 +93,9 @@ class CaroGameUI:
         self.confirm_yes_button = pygame.Rect(0, 0, 0, 0)
         self.confirm_no_button = pygame.Rect(0, 0, 0, 0)
 
+        # WIN POPUP (thông báo khi kết thúc ván)
+        self.show_win_popup = False
+
     #  BACKGROUND 
 
     def draw_background(self):
@@ -849,7 +852,84 @@ class CaroGameUI:
             (255, 80, 120)
         )
 
-    #  AI 
+    #  WIN POPUP
+
+    def draw_win_popup(self):
+
+        if not self.show_win_popup:
+            return
+
+        # lớp phủ mờ toàn màn hình
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 170))
+        self.screen.blit(overlay, (0, 0))
+
+        # nội dung & màu theo kết quả
+        if self.winner == DRAW:
+            msg = "DRAW!"
+            color = (255, 215, 0)
+        elif self.ai_enabled:
+            if self.winner == HUMAN:
+                msg = "YOU WIN!"
+                color = (255, 80, 120)
+            else:
+                msg = "AI WINS!"
+                color = (0, 255, 200)
+        else:
+            if self.winner == HUMAN:
+                msg = "X WINS!"
+                color = (255, 80, 120)
+            else:
+                msg = "O WINS!"
+                color = (0, 255, 200)
+
+        # hộp thông báo
+        box_w, box_h = 460, 200
+        box = pygame.Rect(
+            WIDTH // 2 - box_w // 2,
+            HEIGHT // 2 - box_h // 2,
+            box_w,
+            box_h
+        )
+
+        pygame.draw.rect(
+            self.screen,
+            (18, 18, 28),
+            box,
+            border_radius=15
+        )
+
+        pygame.draw.rect(
+            self.screen,
+            color,
+            box,
+            3,
+            border_radius=15
+        )
+
+        msg_render = self.win_font.render(msg, True, color)
+        self.screen.blit(
+            msg_render,
+            (
+                box.centerx - msg_render.get_width() // 2,
+                box.y + 50
+            )
+        )
+
+        hint = self.font.render(
+            "Click to continue",
+            True,
+            (180, 180, 180)
+        )
+        self.screen.blit(
+            hint,
+            (
+                box.centerx - hint.get_width() // 2,
+                box.bottom - 55
+            )
+        )
+
+    #  AI
 
     def ai_move(self):
 
@@ -874,6 +954,7 @@ class CaroGameUI:
 
             self.game_over = True
             self.winner = result
+            self.show_win_popup = True
 
             if result != DRAW:
                 self.winning_cells = self.find_winning_cells(result)
@@ -881,7 +962,7 @@ class CaroGameUI:
         else:
 
             self.board.switch_player()
-    #  AI UPDATE 
+    #  AI UPDATE
 
     def update_ai(self):
 
@@ -910,6 +991,7 @@ class CaroGameUI:
         self.winning_cells = []
         self.move_count = 0
         self.ai_thinking = False
+        self.show_win_popup = False
 
     def do_menu(self):
 
@@ -945,6 +1027,11 @@ class CaroGameUI:
 
         if self.menu_button.collidepoint(pos):
             self.confirm_action = "menu"
+            return
+
+        # Đang hiện thông báo thắng -> bấm bất kỳ đâu để đóng
+        if self.show_win_popup:
+            self.show_win_popup = False
             return
 
         if self.game_over:
@@ -987,6 +1074,7 @@ class CaroGameUI:
 
             self.game_over = True
             self.winner = result
+            self.show_win_popup = True
 
             if result != DRAW:
                 self.winning_cells = self.find_winning_cells(result)
@@ -1043,6 +1131,10 @@ class CaroGameUI:
                 self.draw_hover_piece()
 
                 self.draw_side_panel()
+
+                # Thông báo thắng / hộp thoại xác nhận vẽ trên cùng
+                self.draw_win_popup()
+                self.draw_confirm_dialog()
 
             pygame.display.update()
 
