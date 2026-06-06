@@ -12,5 +12,8 @@ env/
 .vscode/
 .idea/
 
+# Claude Code
+.claude/
+
 # Misc
 tempCodeRunnerFile.py
