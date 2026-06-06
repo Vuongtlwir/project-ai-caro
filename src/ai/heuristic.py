@@ -15,12 +15,12 @@ PATTERN_SCORES = {
     (5, 2): WIN_SCORE,
     
     # Open 4 (2 ĐẦU ĐỀU MỞ : KHÔNG THỂ CHẶN)
-    (4, 2): 500_000,
+    (4, 2): 1_000_000,
     # Blocked 4 (CHẶN 1 ĐẦU)
-    (4, 1): 50_000,
+    (4, 1): 200_000,
     
     # Open 3 (2 ĐẦU ĐỀU MỞ)
-    (3, 2): 18_000,
+    (3, 2): 25_000,
     # Blocked 3 ( CHẶN 1 ĐẦU )
     (3, 1): 1_500,
     
@@ -35,15 +35,15 @@ PATTERN_SCORES = {
 }
 
 # Double threat bonus: ĐIỂM THƯỞNG CHO NHIỀU OPEN 3 OPEN 4
-DOUBLE_THREAT_BONUS = 100_000
+DOUBLE_THREAT_BONUS = 300_000
 
 
 # NGĂN CHẶN CÁC ĐIỂM QUAN TRỌNG (e.g., XX_XX, X_XXX) - KHOẢNG TRỐNG TRONG CHUỖI
 BROKEN_FOUR_SCORE = 100_000  # X_XXX or XX_XX pattern
-BROKEN_THREE_SCORE = 5_000   # X_XX or XX_X pattern
+BROKEN_THREE_SCORE = 8_000   # X_XX or XX_X pattern
 
 # MỨC ĐỘ ƯU TIÊN CHO CÁC MỐI ĐE DỌA TỪ ĐỐI THỦ
-OPPONENT_WEIGHT =  1.15
+OPPONENT_WEIGHT =  1.5
 
 # THƯỞNG THÊM NẾU KIỂM SOÁT ĐIỂM TRUNG TÂM
 CENTER_BONUS = 15
@@ -60,19 +60,19 @@ class HeuristicsMixin:
         board.make_move_simulate(row, col, HUMAN)
 
         if board.get_winner() == HUMAN:
-            board.undo_move_simulate(row, col)
+            board.undo_move(row, col)
             return WIN_SCORE
 
-        board.undo_move_simulate(row, col)
+        board.undo_move(row, col)
         score = 0
 
         board.make_move_simulate(row, col, AI)
         ai_threat = self.count_threat_at(board, row, col, AI)
-        board.undo_move_simulate(row, col)
+        board.undo_move(row, col)
         
         board.make_move_simulate(row, col, HUMAN)
         human_threat = self.count_threat_at(board, row, col, HUMAN)
-        board.undo_move_simulate(row, col)
+        board.undo_move(row, col)
 
         score = ai_threat + int(human_threat * OPPONENT_WEIGHT)
 
@@ -194,14 +194,27 @@ class HeuristicsMixin:
 
         score = 0
 
-        if "XXXX_" in s or "_XXXX" in s:
-            score += BROKEN_FOUR_SCORE
+        broken_four_patterns = {"XXX_X", "X_XXX", "XX_XX"}
+        broken_three_patterns = {"XX_X_", "_X_XX", "X_XX_", "_XX_X"}
 
-        if "XXX_X" in s or "X_XXX" in s or "XX_XX" in s:
-            score += BROKEN_FOUR_SCORE
+        def open_ends(start_index):
+            ends = 0
+            left = s[start_index - 1] if start_index - 1 >= 0 else "O"
+            right = s[start_index + 5] if start_index + 5 < len(s) else "O"
+            if left == "_":
+                ends += 1
+            if right == "_":
+                ends += 1
+            return ends
 
-        if "XX_X_" in s or "_X_XX" in s:
-            score += BROKEN_THREE_SCORE
+        for start in range(len(s) - 4):
+            segment = s[start:start + 5]
+            if segment in broken_four_patterns:
+                if open_ends(start) >= 1:
+                    score += BROKEN_FOUR_SCORE
+            elif segment in broken_three_patterns:
+                if open_ends(start) == 2:
+                    score += BROKEN_THREE_SCORE
 
         return score
     # Đếm số vị trí player có nhiều open 3 , open 4 có sự đe dọa kép mạnh
@@ -221,7 +234,7 @@ class HeuristicsMixin:
                         threats.append((length, open_ends))
         strong_threats = len([t for t in threats if t[0] >= 3])
         if strong_threats >=2:
-            return DOUBLE_THREAT_BONUS * (strong_threats -1)
+            return DOUBLE_THREAT_BONUS * strong_threats
         return 0
         
     

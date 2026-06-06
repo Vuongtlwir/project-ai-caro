@@ -20,7 +20,7 @@ class IterativeDeepening:
 
         if not legal_moves:
             return None
-
+        
         if len(legal_moves) == 1:
             return legal_moves[0]
         best_move = legal_moves[0]
@@ -29,9 +29,9 @@ class IterativeDeepening:
         for depth in range(1, self.max_depth +1):
             if self.is_time_up():
                 break
-
+            
             move, score = self.search_root(board, depth)
-
+            
             if move is not None and not self.is_time_up():
                 best_move = move
                 best_score = score
@@ -39,4 +39,4 @@ class IterativeDeepening:
                 if score >= WIN_SCORE - 1000:
                     break
 
-        return best_move
+        return best_move 
