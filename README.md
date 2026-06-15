@@ -10,11 +10,10 @@ Caro AI (Gomoku) sử dụng thuật toán Minimax với cắt tỉa Alpha-Beta.
 ## Cài đặt
 
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/Vuongtlwir/project-ai-caro
 ```
 
 ## Chạy chương trình
-
 ### Giao diện người dùng (Pygame)
 
 Chạy file `main.py` để mở giao diện đồ họa:
