@@ -23,10 +23,4 @@ Chạy file `main.py` để mở giao diện đồ họa:
 python main.py
 ```
 
-### AI tự đấu (Hard vs Hard)
 
-Chạy file `run_hardvshard.py` để mô phỏng AI tự đấu 10 ván:
-
-```bash
-python run_hardvshard.py
-```
