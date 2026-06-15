@@ -1,6 +1,6 @@
 from src.ui.pygame_ui import CaroGameUI
 
 
-game = CaroGameUI()
-
-game.run()
+if __name__ == "__main__":
+    game = CaroGameUI()
+    game.run()

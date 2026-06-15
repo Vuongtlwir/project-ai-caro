@@ -51,8 +51,7 @@ class Minimax(
 
         moves = self.order_moves(
             board,
-            depth,
-            is_maximizing=True
+            depth
         )
         if not moves:
             return None, 0
@@ -176,8 +175,7 @@ class Minimax(
 
         moves = self.order_moves(
             board,
-            depth,
-            is_maximizing=maximizing
+            depth
         )
 
         if maximizing:

@@ -63,6 +63,10 @@ class Board:
         if not self.move_history:
             return
 
+        last_row, last_col = self.move_history[-1]
+        if (row, col) != (last_row, last_col):
+            return
+
         self.grid[row][col] = EMPTY
 
         self.move_history.pop()
@@ -111,10 +115,7 @@ class Board:
             return player
 
         return None
-    # =====================================
     # RESET
-    # =====================================
-
     def reset(self):
 
         self.grid = [

@@ -35,7 +35,7 @@ class MoveOrdering:
         return list(candidate)
     #Sắp xếp các nước đi để tối ưu hiệu quả cắt tỉa alpha-beta.
     #Ưu tiên: Các nước đi tốt nhất trước đó, Các nước đi mang tính quyết định, Giá trị chiến thuật
-    def order_moves(self, board: Board, depth: int, is_maximizing: bool):
+    def order_moves(self, board: Board, depth: int):
 
         moves = self.get_candidate_moves(board)
         if not moves:
@@ -54,7 +54,6 @@ class MoveOrdering:
 
             tactical = self.quick_tactical_score(board, row, col)
             score += tactical
-            # TĂNG ĐIỂM CHO NƯỚC ĐI TẠO THREAT MẠNH
             board.make_move_simulate(row, col, AI)
             threat_score = self.count_threat_at(
                 board,
@@ -67,17 +66,12 @@ class MoveOrdering:
 
             if self.is_dangerous_threat(board, AI):
                 score += 300_000
-            board.undo_move(row, col)
 
-            # CHỐNG THREAT CỦA player
             if self.is_dangerous_threat(board, HUMAN):
-
-                board.make_move_simulate(row, col, AI)
-
                 if not self.is_dangerous_threat(board, HUMAN):
                     score += 500_000
 
-                board.undo_move(row, col)
+            board.undo_move(row, col)
 
             
             

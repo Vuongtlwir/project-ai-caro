@@ -11,6 +11,8 @@ INF = 10**18
 
 MAX_DEPTH = 4
 
+TIME_LIMIT = 2.0
+
 
 CELL_SIZE = 40
 
